@@ -4,8 +4,6 @@
 
 ## Naming Conventions
 
-</br>
-
 ### Folders
 
 #### Environments
