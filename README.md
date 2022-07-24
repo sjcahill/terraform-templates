@@ -8,6 +8,7 @@
 
 #### Environments
 - `global` Contains resources used across all environments and remote backend configuration
+- `modules` Contains reusable infrastructure modules
 - `dev` Contains development/testing infrastucture
 - `stage` Preproduction and further testing infrastructure
 - `prod` Production infrastructure
