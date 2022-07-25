@@ -21,34 +21,18 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_s3_bucket" "power_bi_ami_bucket" {
-  bucket = "sj-apogee-powerbi-ami"
+resource "aws_s3_bucket" "s3_buckets" {
+  for_each = toset(var.s3_bucket_names)
+  bucket   = each.key
 
   lifecycle {
     prevent_destroy = true
   }
 }
-
-resource "aws_s3_bucket" "dev_bucket" {
-  bucket = "dev-sj-apogee-test"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "aws_s3_bucket" "prod_bucket" {
-  bucket = "prod-sj-apogee-test"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-
 
 resource "aws_s3_bucket_versioning" "enabled" {
-  bucket = aws_s3_bucket.power_bi_ami_bucket.id
+  for_each = aws_s3_bucket.s3_buckets
+  bucket   = each.value.id
 
   versioning_configuration {
     status = "Enabled"
@@ -56,7 +40,9 @@ resource "aws_s3_bucket_versioning" "enabled" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket                  = aws_s3_bucket.power_bi_ami_bucket.id
+  for_each = aws_s3_bucket.s3_buckets
+
+  bucket                  = each.value.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -64,7 +50,8 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
-  bucket = aws_s3_bucket.power_bi_ami_bucket.id
+  for_each = aws_s3_bucket.s3_buckets
+  bucket   = each.value.id
 
   rule {
     apply_server_side_encryption_by_default {
